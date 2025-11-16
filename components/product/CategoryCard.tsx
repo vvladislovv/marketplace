@@ -18,7 +18,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
         className="flex flex-col items-center gap-2 p-4 glass-card rounded-2xl cursor-pointer"
       >
         <div className="text-4xl mb-1">{category.icon}</div>
-        <span className="text-sm font-medium text-gray-800 text-center">
+        <span className="text-xs font-medium text-gray-800 text-center line-clamp-2 break-words w-full">
           {category.name}
         </span>
       </motion.div>

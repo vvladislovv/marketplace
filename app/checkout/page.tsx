@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -22,14 +22,27 @@ export default function CheckoutPage() {
     paymentMethod: 'card' as 'card' | 'cash',
   });
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  if (cart.length === 0 && typeof window !== 'undefined') {
-    router.push('/cart');
-    return null;
-  }
-  
-  if (cart.length === 0) {
-    return null;
+  useEffect(() => {
+    if (cart.length === 0 && typeof window !== 'undefined') {
+      setIsRedirecting(true);
+      router.push('/cart');
+    }
+  }, [cart.length, router]);
+
+  if (cart.length === 0 || isRedirecting) {
+    return (
+      <div className="min-h-screen pb-20" suppressHydrationWarning>
+        <Header />
+        <main className="container mx-auto px-4 py-6" suppressHydrationWarning>
+          <div className="glass-card rounded-2xl p-8 text-center" suppressHydrationWarning>
+            <p className="text-gray-600">Перенаправление...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,10 +50,14 @@ export default function CheckoutPage() {
     setLoading(true);
 
     // Создание заказа
+    const subtotal = getTotalPrice();
+    const commission = subtotal * 0.05; // 5% комиссия платформы
+    const total = subtotal + commission;
+    
     const order: Order = {
       id: Date.now().toString(),
       items: cart,
-      total: getTotalPrice(),
+      total: total,
       status: 'pending',
       createdAt: new Date().toISOString(),
       deliveryAddress: formData.address,
@@ -66,10 +83,10 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20" suppressHydrationWarning>
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6" suppressHydrationWarning>
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Оформление заказа</h1>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -181,13 +198,24 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
-              <div className="border-t border-gray-200 pt-4">
-                <div className="flex justify-between items-center text-lg">
+              <div className="border-t border-gray-200 pt-4 space-y-2">
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                  <span>Товары:</span>
+                  <span>{formatPrice(getTotalPrice())}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                  <span>Комиссия платформы (5%):</span>
+                  <span>{formatPrice(getTotalPrice() * 0.05)}</span>
+                </div>
+                <div className="flex justify-between items-center text-lg pt-2 border-t border-gray-200">
                   <span className="font-semibold text-gray-800">Итого:</span>
                   <span className="text-2xl font-bold text-primary-500">
-                    {formatPrice(getTotalPrice())}
+                    {formatPrice(getTotalPrice() * 1.05)}
                   </span>
                 </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  * Комиссия платформы включена в итоговую сумму
+                </p>
               </div>
             </div>
           </motion.div>

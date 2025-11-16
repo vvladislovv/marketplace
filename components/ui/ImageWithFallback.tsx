@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 
 interface ImageWithFallbackProps {
   src: string;
@@ -13,6 +12,8 @@ interface ImageWithFallbackProps {
   sizes?: string;
 }
 
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2U1ZTdlYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=';
+
 export function ImageWithFallback({
   src,
   alt,
@@ -22,52 +23,49 @@ export function ImageWithFallback({
   className = '',
   sizes,
 }: ImageWithFallbackProps) {
-  // Если это data URI, используем обычный img
-  if (src.startsWith('data:')) {
-    if (fill) {
-      return (
-        <img
-          src={src}
-          alt={alt}
-          className={className}
-          style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-        />
-      );
-    }
-    return (
-      <img
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        className={className}
-        style={{ objectFit: 'cover' }}
-      />
-    );
-  }
+  const [imgSrc, setImgSrc] = useState(src);
+  const [hasError, setHasError] = useState(false);
 
-  // Для обычных URL используем Next.js Image
+  useEffect(() => {
+    setImgSrc(src);
+    setHasError(false);
+  }, [src]);
+
+  const handleError = () => {
+    // Используем setTimeout чтобы избежать обновления во время рендера
+    setTimeout(() => {
+      if (!hasError) {
+        setHasError(true);
+        setImgSrc(PLACEHOLDER_IMAGE);
+      }
+    }, 0);
+  };
+
+  // Используем обычный img тег для всех случаев, чтобы избежать проблем с hydration
+  // и обновлениями во время рендера, которые возникают с Next.js Image
   if (fill) {
     return (
-      <Image
-        src={src}
+      <img
+        src={hasError ? PLACEHOLDER_IMAGE : imgSrc}
         alt={alt}
-        fill
         className={className}
-        sizes={sizes}
-        unoptimized={src.startsWith('data:')}
+        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+        onError={handleError}
+        loading="lazy"
       />
     );
   }
 
   return (
-    <Image
-      src={src}
+    <img
+      src={hasError ? PLACEHOLDER_IMAGE : imgSrc}
       alt={alt}
       width={width}
       height={height}
       className={className}
-      unoptimized={src.startsWith('data:')}
+      style={{ objectFit: 'cover' }}
+      onError={handleError}
+      loading="lazy"
     />
   );
 }

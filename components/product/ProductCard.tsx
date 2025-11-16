@@ -10,10 +10,35 @@ import { Button } from '@/components/ui/Button';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { useCart } from '@/components/providers/CartProvider';
 import { motion } from 'framer-motion';
+import { storage } from '@/lib/storage';
 
 interface ProductCardProps {
   product: Product;
 }
+
+// Маппинг категорий на эмодзи
+const categoryEmojiMap: Record<string, string> = {
+  electronics: '📱',
+  clothing: '👕',
+  home: '🏠',
+  sports: '⚽',
+  beauty: '💄',
+  books: '📚',
+  toys: '🧸',
+  food: '🍔',
+};
+
+const getCategoryEmoji = (categoryId: string): string => {
+  // Сначала проверяем маппинг
+  if (categoryEmojiMap[categoryId]) {
+    return categoryEmojiMap[categoryId];
+  }
+  
+  // Если нет в маппинге, пытаемся получить из категорий
+  const categories = storage.getCategories();
+  const category = categories.find(c => c.id === categoryId);
+  return category?.icon || '📦';
+};
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
@@ -27,15 +52,11 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/product/${product.id}`}>
       <Card hover className="h-full flex flex-col">
-        {/* Image */}
-        <div className="relative w-full aspect-square mb-3 rounded-xl overflow-hidden bg-gray-100">
-          <ImageWithFallback
-            src={product.image}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          />
+        {/* Image/Emoji */}
+        <div className="relative w-full aspect-square mb-3 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="text-6xl md:text-7xl">
+            {getCategoryEmoji(product.category)}
+          </div>
           {product.oldPrice && (
             <div className="absolute top-2 right-2 bg-accent-400 text-white px-2 py-1 rounded-lg text-xs font-bold">
               -{calculateDiscount(product.oldPrice, product.price)}%

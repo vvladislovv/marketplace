@@ -61,10 +61,10 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20" suppressHydrationWarning>
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6" suppressHydrationWarning>
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Мои заказы</h1>
 
         <div className="space-y-4">
@@ -79,6 +79,7 @@ export default function OrdersPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="glass-card rounded-2xl p-6"
+                suppressHydrationWarning
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -121,6 +122,14 @@ export default function OrdersPage() {
                   <span className="text-xl font-bold text-primary-500">
                     {formatPrice(order.total)}
                   </span>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <Link href={`/orders/${order.id}`}>
+                    <Button variant="outline" size="sm" fullWidth>
+                      Подробнее о заказе
+                    </Button>
+                  </Link>
                 </div>
               </motion.div>
             );

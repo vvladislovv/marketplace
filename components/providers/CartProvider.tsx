@@ -26,6 +26,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const addToCart = (product: Product, quantity: number = 1) => {
     storage.addToCart(product, quantity);
     setCart(storage.getCart());
+    
+    // Показываем уведомление через событие
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('show-toast', {
+        detail: {
+          message: `Товар "${product.name}" добавлен в корзину`,
+          type: 'success'
+        }
+      }));
+    }
   };
 
   const removeFromCart = (productId: string) => {

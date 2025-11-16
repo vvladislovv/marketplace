@@ -37,14 +37,19 @@ export default function CartPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card rounded-2xl p-8 text-center"
+            className="glass-card rounded-2xl p-8 text-center flex flex-col items-center justify-center"
+            suppressHydrationWarning
           >
             <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <h2 className="text-2xl font-bold mb-2 text-gray-800">Корзина пуста</h2>
             <p className="text-gray-600 mb-6">Добавьте товары, чтобы продолжить покупки</p>
-            <Link href="/">
-              <Button>Перейти к покупкам</Button>
-            </Link>
+            <div className="flex justify-center">
+              <Link href="/">
+                <Button size="lg" className="px-8 py-3">
+                  Перейти к покупкам
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </main>
         <Footer />
@@ -184,14 +189,27 @@ export default function CartPage() {
           className="glass-card rounded-2xl p-6 sticky bottom-24"
         >
           <div className="space-y-4">
-            <div className="flex justify-between items-center text-lg">
-              <span className="text-gray-700">Итого:</span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-sm text-gray-600">
+                <span>Товары:</span>
+                <span>{formatPrice(getTotalPrice())}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm text-gray-600">
+                <span>Комиссия платформы (5%):</span>
+                <span>{formatPrice(getTotalPrice() * 0.05)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center text-lg pt-2 border-t border-gray-200">
+              <span className="text-gray-700 font-semibold">Итого:</span>
               <span className="text-2xl font-bold text-primary-500">
-                {formatPrice(getTotalPrice())}
+                {formatPrice(getTotalPrice() * 1.05)}
               </span>
             </div>
+            <p className="text-xs text-gray-500">
+              * Комиссия платформы включена в итоговую сумму
+            </p>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <Button
                 variant="outline"
                 onClick={clearCart}

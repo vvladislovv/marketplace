@@ -65,12 +65,12 @@ function SearchPageContent() {
   const categories = Array.from(new Set(products.map(p => p.category)));
 
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20" suppressHydrationWarning>
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6" suppressHydrationWarning>
         {/* Search and Filters Bar */}
-        <div className="mb-6 space-y-4">
+        <div className="mb-6 space-y-4" suppressHydrationWarning>
           <div className="flex gap-2">
             <input
               type="text"
@@ -88,7 +88,7 @@ function SearchPageContent() {
           </div>
 
           {/* Sort */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" suppressHydrationWarning>
             <span className="text-gray-700 text-sm font-medium">Сортировка:</span>
             <select
               value={sortBy}
@@ -109,6 +109,7 @@ function SearchPageContent() {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="glass-card rounded-xl p-4 space-y-4"
+                suppressHydrationWarning
               >
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-800">Фильтры</h3>
@@ -194,24 +195,25 @@ function SearchPageContent() {
         </div>
 
         {/* Results */}
-        <div>
+        <div suppressHydrationWarning>
           <p className="text-gray-700 mb-4 font-medium">
             Найдено товаров: {filteredProducts.length}
           </p>
           
           {filteredProducts.length === 0 ? (
-            <div className="glass-card rounded-xl p-8 text-center">
+            <div className="glass-card rounded-xl p-8 text-center" suppressHydrationWarning>
               <p className="text-gray-600 text-lg mb-2">Товары не найдены</p>
               <p className="text-gray-500">Попробуйте изменить параметры поиска</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" suppressHydrationWarning>
               {filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
+                  suppressHydrationWarning
                 >
                   <ProductCard product={product} />
                 </motion.div>

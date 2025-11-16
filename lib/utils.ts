@@ -46,3 +46,22 @@ export function sortProducts(products: Product[], sortBy: 'price' | 'rating' | '
   }
 }
 
+// Маппинг категорий на эмодзи
+const categoryEmojiMap: Record<string, string> = {
+  electronics: '📱',
+  clothing: '👕',
+  home: '🏠',
+  sports: '⚽',
+  beauty: '💄',
+  books: '📚',
+  toys: '🧸',
+  food: '🍔',
+};
+
+export function getCategoryEmoji(categoryId: string): string {
+  if (categoryEmojiMap[categoryId]) {
+    return categoryEmojiMap[categoryId];
+  }
+  return '📦';
+}
+

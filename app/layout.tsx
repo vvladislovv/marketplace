@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/components/providers/CartProvider'
+import { ToastProvider } from '@/components/providers/ToastProvider'
 
 const inter = Inter({ subsets: ['cyrillic', 'latin'] })
 
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -35,10 +36,21 @@ export default function RootLayout({
                 script.async = true;
                 script.onload = function() {
                   if (window.Telegram && window.Telegram.WebApp) {
-                    window.Telegram.WebApp.expand();
-                    window.Telegram.WebApp.setHeaderColor('#ffffff');
-                    window.Telegram.WebApp.setBackgroundColor('#f8f9fa');
-                    window.Telegram.WebApp.ready();
+                    var tg = window.Telegram.WebApp;
+                    tg.expand();
+                    
+                    // Проверяем версию API перед вызовом методов, которые требуют версию 6.1+
+                    var version = parseFloat(tg.version || '0');
+                    if (version >= 6.1) {
+                      if (tg.setHeaderColor) {
+                        tg.setHeaderColor('#ffffff');
+                      }
+                      if (tg.setBackgroundColor) {
+                        tg.setBackgroundColor('#f8f9fa');
+                      }
+                    }
+                    
+                    tg.ready();
                   }
                 };
                 document.head.appendChild(script);
@@ -50,10 +62,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={inter.className}>
-        <CartProvider>
-          {children}
-        </CartProvider>
+      <body className={inter.className} suppressHydrationWarning>
+        <ToastProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </ToastProvider>
       </body>
     </html>
   )
