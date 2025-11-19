@@ -7,7 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/Button';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
-import { Order, Review } from '@/types';
+import { Order, OrderStatusHistory, Review } from '@/types';
 import { storage } from '@/lib/storage';
 import { formatPrice } from '@/lib/utils';
 import { ArrowLeft, Package, CheckCircle, Clock, Truck, XCircle, Star, MessageSquare } from 'lucide-react';
@@ -36,8 +36,8 @@ export default function OrderDetailsPage() {
   const [reviewRatings, setReviewRatings] = useState<Record<string, number>>({});
   const [reviewComments, setReviewComments] = useState<Record<string, string>>({});
 
-  const generateStatusHistory = (order: Order) => {
-    const history = [];
+  const generateStatusHistory = (order: Order): OrderStatusHistory[] => {
+    const history: OrderStatusHistory[] = [];
     const createdAt = new Date(order.createdAt);
     
     // Заказ создан
@@ -96,10 +96,10 @@ export default function OrderDetailsPage() {
         if (minutesSinceCreation >= 3 && foundOrder.status !== 'delivered' && foundOrder.status !== 'cancelled') {
           updatedOrder.status = 'delivered';
           statusChanged = true;
-        } else if (minutesSinceCreation >= 2 && (foundOrder.status === 'pending' || foundOrder.status === 'processing') && foundOrder.status !== 'delivered' && foundOrder.status !== 'cancelled') {
+        } else if (minutesSinceCreation >= 2 && (foundOrder.status === 'pending' || foundOrder.status === 'processing')) {
           updatedOrder.status = 'shipped';
           statusChanged = true;
-        } else if (minutesSinceCreation >= 1 && foundOrder.status === 'pending' && foundOrder.status !== 'cancelled') {
+        } else if (minutesSinceCreation >= 1 && foundOrder.status === 'pending') {
           updatedOrder.status = 'processing';
           statusChanged = true;
         }

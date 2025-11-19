@@ -1,10 +1,8 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/components/providers/CartProvider'
 import { ToastProvider } from '@/components/providers/ToastProvider'
-
-const inter = Inter({ subsets: ['cyrillic', 'latin'] })
 
 export const metadata: Metadata = {
   title: 'Маркетплейс',
@@ -27,6 +25,12 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -62,7 +66,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <ToastProvider>
           <CartProvider>
             {children}
